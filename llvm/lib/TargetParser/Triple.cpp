@@ -84,6 +84,8 @@ StringRef Triple::getArchTypeName(ArchType Kind) {
   case x86_64:         return "x86_64";
   case xcore:          return "xcore";
   case xtensa:         return "xtensa";
+  case qinling32:      return "qinling32";
+  case qinling64:      return "qinling64";
   }
 
   llvm_unreachable("Invalid ArchType!");
@@ -228,6 +230,9 @@ StringRef Triple::getArchTypePrefix(ArchType Kind) {
   case dxil:        return "dx";
 
   case xtensa:      return "xtensa";
+
+  case qinling32:      
+  case qinling64:   return "qinling";
   }
 }
 
@@ -459,6 +464,8 @@ Triple::ArchType Triple::getArchTypeForLLVMName(StringRef Name) {
     .Case("loongarch64", loongarch64)
     .Case("dxil", dxil)
     .Case("xtensa", xtensa)
+    .Case("qinling32", qinling32)
+    .Case("qinling64", qinling64)
     .Default(UnknownArch);
 }
 
@@ -605,6 +612,8 @@ static Triple::ArchType parseArch(StringRef ArchName) {
                  "dxilv1.4", "dxilv1.5", "dxilv1.6", "dxilv1.7", "dxilv1.8",
                  Triple::dxil)
           .Case("xtensa", Triple::xtensa)
+          .Case("qinling32", Triple::qinling32)
+          .Case("qinling64", Triple::qinling64)
           .Default(Triple::UnknownArch);
 
   // Some architectures require special parsing logic just to compute the
@@ -942,6 +951,8 @@ static Triple::ObjectFormatType getDefaultFormat(const Triple &T) {
   case Triple::ve:
   case Triple::xcore:
   case Triple::xtensa:
+  case Triple::qinling32:
+  case Triple::qinling64:
     return Triple::ELF;
 
   case Triple::ppc64:
@@ -1632,6 +1643,7 @@ unsigned Triple::getArchPointerBitWidth(llvm::Triple::ArchType Arch) {
   case llvm::Triple::x86:
   case llvm::Triple::xcore:
   case llvm::Triple::xtensa:
+  case llvm::Triple::qinling32:
     return 32;
 
   case llvm::Triple::aarch64:
@@ -1657,6 +1669,7 @@ unsigned Triple::getArchPointerBitWidth(llvm::Triple::ArchType Arch) {
   case llvm::Triple::ve:
   case llvm::Triple::wasm64:
   case llvm::Triple::x86_64:
+  case llvm::Triple::qinling64:
     return 64;
   }
   llvm_unreachable("Invalid architecture value");
@@ -1722,6 +1735,7 @@ Triple Triple::get32BitArchVariant() const {
   case Triple::x86:
   case Triple::xcore:
   case Triple::xtensa:
+  case Triple::qinling32:
     // Already 32-bit.
     break;
 
@@ -1749,6 +1763,7 @@ Triple Triple::get32BitArchVariant() const {
     break;
   case Triple::wasm64:         T.setArch(Triple::wasm32);  break;
   case Triple::x86_64:         T.setArch(Triple::x86);     break;
+  case Triple::qinling64:      T.setArch(Triple::qinling32); break;
   }
   return T;
 }
@@ -1798,6 +1813,7 @@ Triple Triple::get64BitArchVariant() const {
   case Triple::ve:
   case Triple::wasm64:
   case Triple::x86_64:
+  case Triple::qinling64:
     // Already 64-bit.
     break;
 
@@ -1828,6 +1844,7 @@ Triple Triple::get64BitArchVariant() const {
   case Triple::thumbeb:         T.setArch(Triple::aarch64_be); break;
   case Triple::wasm32:          T.setArch(Triple::wasm64);     break;
   case Triple::x86:             T.setArch(Triple::x86_64);     break;
+  case Triple::qinling32:       T.setArch(Triple::qinling64);  break;
   }
   return T;
 }
